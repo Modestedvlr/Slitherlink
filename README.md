@@ -34,9 +34,13 @@ Le Slitherlink est modélisé comme un graphe non orienté $G = (V, E)$. Chaque 
 
 ### Le Solveur (Programmation Linéaire en Nombres Entiers - ILP)
 Pour répondre à l'exigence de "sophistication", nous implémentons un solveur basé sur l'optimisation sous contraintes :
-- **Variables de décision :** $x_{ij} \in \{0, 1\}$, où $1$ si le segment est tracé, $0$ sinon.
-- **Contrainte de degré :** $\sum_{j \in \delta(i)} x_{ij} \in \{0, 2\}$ pour chaque sommet $i$.
-- **Contrainte de face :** La somme des $x_{ij}$ bordant une case doit égaler l'indice $k \in \{0,1,2,3\}$.
+
+- **Variables de décision :** $x_{ij}$ $\in$ $\{0, 1\}$, où $1$ si le segment est tracé, $0$ sinon.
+
+- **Contrainte de degré :** $\sum_{j \in \delta(i)}$ $x_{ij}$ $\in$ $\{0, 2\}$ pour chaque sommet $i$.
+
+- **Contrainte de face :** La somme des $x_{ij}$ bordant une case doit égaler l'indice $k$ $\in$ $\{0,1,2,3\}$.
+
 - **Élimination des sous-tours :** Algorithme itératif pour garantir l'unicité de la boucle (cycle hamiltonien partiel).
 
 ### Algorithme de Génération
