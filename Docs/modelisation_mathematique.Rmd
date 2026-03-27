@@ -1,0 +1,51 @@
+---
+title: "Modélisation Mathématique du Jeu Slitherlink"
+author: "Dossou AGOSSOU & Moussa DIAGNE"
+date: "2026-03-27"
+output: pdf_document
+---
+
+---
+
+# 1. Introduction
+
+Le Slitherlink est un problème de satisfaction de contraintes spatiales qui se prête parfaitement à une modélisation par la théorie des graphes. L'objectif est de tracer un **cycle hamiltonien** unique sur un sous-graphe de la grille, tout en respectant des contraintes locales de voisinage.
+
+Un **cycle hamiltonien** est défini, dans un graphe $G = (V, E)$, comme un chemin fermé (un cycle) qui visite chaque sommet $v \in V$ exactement une fois. 
+
+Dans le contexte spécifique du Slitherlink, la recherche est plus subtile : nous cherchons à identifier un sous-graphe $G' \subset G$ (composé d'un sous-ensemble de sommets et d'arêtes de la grille) dont l'ensemble des arêtes "activées" forme un cycle unique. Pour respecter la topologie du jeu, ce cycle ne doit jamais se croiser ni se ramifier, ce qui impose une contrainte de degré stricte : chaque sommet appartenant à ce cycle doit être de **degré 2**, tandis que les sommets n'appartenant pas à la boucle sont de **degré 0**.
+
+---
+
+# 2. Formalisation par la Théorie des Graphes
+On définit la grille comme un graphe non-orienté $G = (V, E)$.
+
+- **Sommets $V$** : Représentent les intersections de la grille. Chaque sommet est identifié par ses coordonnées $(i, j)$ où $i \in \{0, \dots, n\}$ et $j \in \{0, \dots, m\}$.
+
+- **Arêtes $E$** : Représentent les segments potentiels. On distingue l'ensemble des arêtes horizontales $E_H$ et verticales $E_V$.
+
+- **Variables de décision** : Pour chaque arête $e \in E$, on définit une variable binaire $x_e \in \{0, 1\}$ telle que :
+  $$x_e = \begin{cases} 1 & \text{si l'arête est tracée} \\ 0 & \text{sinon} \end{cases}$$
+
+---
+
+# 3. Les Contraintes du Modèle
+
+
+## 3.1 Contraintes de Face (Indices)
+Chaque case $C_{i,j}$ peut contenir un indice $k_{i,j} \in \{0, 1, 2, 3\}$. La somme des arêtes entourant la case doit être égale à cet indice :
+$$\sum_{e \in \partial C_{i,j}} x_e = k_{i,j}$$
+Où $\partial C_{i,j}$ est l'ensemble des 4 arêtes (haut, bas, gauche, droite) de la case.
+
+
+## 3.2 Contrainte de Topologie (Degré des sommets)
+Pour former une boucle sans ramification ni cul-de-sac, chaque sommet $v$ doit avoir un degré de 0 ou 2 dans le graphe solution :
+$$\sum_{e \text{ incident à } v} x_e \in \{0, 2\}$$
+
+
+## 3.3 Contrainte de Cycle Unique (Connectivité)
+Il s'agit de la contrainte la plus complexe. Elle impose que l'ensemble des arêtes $e$ où $x_e=1$ ne forme qu'une seule composante connexe. En optimisation combinatoire, on utilise souvent des contraintes d'élimination de sous-tours (Subtour Elimination Constraints) :
+$$\forall S \subset V, 2 \leq |S| \leq |V|-1, \sum_{e \in \delta(S)} x_e \geq 2y_S$$
+où $\delta(S)$ est la coupe séparant $S$ du reste du graphe.
+
+---
