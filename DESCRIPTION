@@ -1,0 +1,21 @@
+Package: Slitherlink_R
+Title: Jeu Interactif Slitherlink
+Version: 0.0.0.9000
+Authors@R: 
+    person("Prénom", "Nom", , "email@example.com", role = c("aut", "cre"))
+Description: Ce package implémente le jeu Slitherlink avec un solveur 
+    optimisé et une interface Shiny interactive.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    dplyr,
+    ggplot2,
+    magrittr,
+    shiny,
+    rlang
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
