@@ -41,7 +41,7 @@ Pour répondre à l'exigence de "sophistication", nous implémentons un solveur 
 
 - **Contrainte de face :** La somme des $x_{ij}$ bordant une case doit égaler l'indice $k \in \{0,1,2,3\}$.
 
-- **Élimination des sous-tours :** Algorithme itératif pour garantir l'unicité de la boucle (cycle hamiltonien partiel).
+.- **Élimination des sous-tours :** Algorithme itératif pour garantir l'unicité de la boucle (cycle hamiltonien partiel).
 
 ### Algorithme de Génération
 La génération de niveaux repose sur un processus de **soustraction d'indices** à partir d'une boucle complète aléatoire, tout en garantissant l'unicité de la solution par appels successifs au solveur.
