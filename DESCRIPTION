@@ -1,4 +1,4 @@
-Package: Slitherlink_R
+Package: SlitherlinkR
 Title: Jeu Interactif Slitherlink
 Version: 0.0.0.9000
 Authors@R: 
@@ -15,7 +15,10 @@ Imports:
     ggplot2,
     magrittr,
     shiny,
-    rlang
+    rlang,
+    Rcpp
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+LinkingTo: 
+    Rcpp

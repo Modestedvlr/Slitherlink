@@ -6,6 +6,16 @@
 \usage{
 toggle_v_edge(grid, r, c)
 }
+\arguments{
+\item{grid}{Un objet de classe \code{slitherlink}.}
+
+\item{r}{Indice de ligne   (1 à n).}
+
+\item{c}{Indice de colonne (1 à m+1).}
+}
+\value{
+La grille modifiée.
+}
 \description{
 Basculer l'état d'un segment vertical
 }

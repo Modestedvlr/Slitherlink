@@ -6,6 +6,16 @@
 \usage{
 toggle_h_edge(grid, r, c)
 }
+\arguments{
+\item{grid}{Un objet de classe \code{slitherlink}.}
+
+\item{r}{Indice de ligne   (1 à n+1).}
+
+\item{c}{Indice de colonne (1 à m).}
+}
+\value{
+La grille modifiée.
+}
 \description{
 Basculer l'état d'un segment horizontal
 }
