@@ -106,7 +106,7 @@ test_that("validate_solution retourne TRUE sur une solution complète", {
 
   res <- validate_solution(g)
   expect_true(res$valid)
-  expect_match(res$messages, "Félicitations")
+  expect_match(res$messages, "Felicitations")
 })
 
 test_that("validate_solution retourne FALSE et plusieurs messages sur erreurs multiples", {

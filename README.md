@@ -4,86 +4,117 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Présentation du Projet
-Ce projet est réalisé dans le cadre de l'unité d'enseignement **Programmation R** du Master 1 Statistique et Science des Données (SSD) à l'Université de Montpellier.
 
-L'objectif est de concevoir un package R complet permettant de :
-1. **Générer** des grilles de Slitherlink de manière algorithmique.
-2. **Résoudre** ces puzzles via des méthodes de programmation mathématique (ILP).
-3. **Jouer** de manière interactive via une application Shiny sophistiquée.
+SlitherlinkR est un package R complet dédié au jeu de logique Slitherlink. Ce projet intègre une logique métier robuste, un solveur haute performance en C++ et une interface utilisateur interactive sous Shiny.
 
-**Auteurs :** [Moussa DIAGNE] & [Dossou AGOSSOU]  
+Réalisé dans le cadre de l'unité d'enseignement Programmation R à l'Université de Montpellier, ce package démontre l'intégration de plusieurs paradigmes de programmation.
+
+**Auteurs :** [Moussa DIAGNE] & [Dossou AGOSSOU] 
+
 **Date de rendu :** 17 Avril 2026
 
 ---
 
-## Architecture du Package
-Le projet suit scrupuleusement la structure standard d'un package R pour garantir la portabilité et la robustesse :
+## Fonctionnalités Clés
 
-- `R/` : Contient les fonctions de calcul (moteur logique, solveur, générateurs).
-- `inst/shiny-app/` : Code source de l'interface utilisateur interactive.
-- `man/` : Documentation automatique des fonctions (via `roxygen2`).
-- `tests/testthat/` : Suite de tests unitaires pour valider les règles du jeu.
-- `vignettes/` : (Optionnel) Guide détaillé sur la modélisation mathématique utilisée.
+**Interface Shiny Interactive :** Une application fluide permettant de jouer à la souris, avec détection automatique de la victoire.
 
----
+**Solveur C++ Ultra-Rapide :** Implémentation d'un algorithme de backtracking récursif en C++ pour résoudre des grilles complexes en quelques millisecondes.
 
-## Modélisation Mathématique & Logique
+**Système de Leaderboard :** Persistance des scores (temps de résolution) via une base de données SQLite intégrée.
 
-### Théorie des Graphes
-Le Slitherlink est modélisé comme un graphe non orienté  $G = (V, E)$. Chaque intersection de la grille est un sommet $v \in V$, et chaque segment possible est une arête $e \in E$.
+**Génération Algorithmique :** Création de nouvelles grilles garantissant une solution unique.
 
-### Le Solveur (Programmation Linéaire en Nombres Entiers - ILP)
-Pour répondre à l'exigence de "sophistication", nous implémentons un solveur basé sur l'optimisation sous contraintes :
-
-- **Variables de décision :** $x_{ij} \in \{0, 1\}$, où $1$ si le segment est tracé, $0$ sinon.
-
-- **Contrainte de degré :** $\sum_{j \in \delta(i)} x_{ij} \in$ \{0, 2\}$ pour chaque sommet $i$.
-
-- **Contrainte de face :** La somme des $x_{ij}$ bordant une case doit égaler l'indice $k \in \{0,1,2,3\}$.
-
-.- **Élimination des sous-tours :** Algorithme itératif pour garantir l'unicité de la boucle (cycle hamiltonien partiel).
-
-### Algorithme de Génération
-La génération de niveaux repose sur un processus de **soustraction d'indices** à partir d'une boucle complète aléatoire, tout en garantissant l'unicité de la solution par appels successifs au solveur.
+**Validation Rigoureuse :** Moteur de vérification des règles (contraintes de cases, boucle unique via DFS).
 
 ---
 
-## Installation et Utilisation
+## Architecture Technique
 
-Pour installer le package depuis GitHub et lancer l'application :
+### 1. Programmation Orientée Objet (S3) :
 
-```r
-# Installation des dépendances
-install.packages(c("shiny", "ggplot2", "devtools", "testthat", "shinyjs", "ompr", "lpSolve"))
+Le package définit une classe slitherlink structurée de manière efficiente :
 
-# Chargement du projet
+- Stockage optimisé des arêtes (matrices d'entiers).
+
+- Méthodes `plot()` basées sur `ggplot2` utilisant la grammaire des graphiques pour un rendu professionnel et clair.
+
+
+### 2. Performance et C++ (Rcpp) :
+
+Le cœur du solveur est déporté en C++ pour pallier les limitations de vitesse de R sur les algorithmes récursifs.
+
+- **Backtracking avec Élidage :** Le solveur explore l'arbre des possibles et coupe les branches dès qu'une contrainte de Slitherlink est violée.
+
+- **Interpénétrabilité :** Utilisation de RcppExports pour une communication transparente entre les données R et les pointeurs C++.
+
+
+### Gestion des Données (SQL) :
+
+Utilisation des packages `DBI` et `RSQLite` pour gérer un tableau d'honneur (Leaderboard) :
+
+- Archivage des pseudos, temps et dates.
+
+- Requêtes SQL pour l'affichage du Top 10 au sein de l'interface Shiny.
+
+
+### 4. Qualité du Code :
+
+- **Tests Unitaires :** Plus de 25 tests avec le framework testthat couvrant la logique de validation et le solveur.
+
+- **Documentation :** Entièrement générée avec `roxygen2`.
+
+---
+
+## Installation
+
+Vous pouvez installer la version de développement depuis GitHub :
+
+```{r}
+# Installation des dépendances nécessaires
+install.packages(c("shiny", "ggplot2", "Rcpp", "RSQLite", "DBI", "dplyr", "testthat"))
+
+# Chargement du package
 devtools::load_all()
 
-# Lancement de l'application
+# Lancement du jeu
 run_slitherlink()
 ```
 
 ---
 
+## Structure du Dépôt
+
+- `R/` : Logique métier (validateurs, gestion de grille, interface SQL).
+- `src/` : Code source C++ (solver.cpp).
+- `inst/shiny-app/` : Interface utilisateur et réactivité Shiny.
+- `tests/`` : Suite de tests automatisés.
+
+---
+
+## Collaboration Git
+
+Le projet a été mené en utilisant les bonnes pratiques de développement collaboratif :
+
+- Utilisation systématique de branches pour les fonctionnalités
+
+- Relecture de code croisée.
+
+- Suivi des bugs via les Issues GitHub.
+
+
+---
+
 ## Plan de Développement (Roadmap)
 
-Phase 1 : Définition de la structure de données S3/R6 pour la grille.
+Phase 1 : Définition de la structure de données S3 pour la grille.
 
 Phase 2 : Implémentation du moteur de vérification (boucle unique, connectivité).
 
-Phase 3 : Développement du solveur ILP (Programmation Linéaire).
+Phase 3 : Développement du solveur C++ (Rcpp).
 
 Phase 4 : Création de l'interface Shiny (Module UI/Server).
 
 Phase 5 : Finalisation de la documentation et tests unitaires.
 
 ---
-
-## Collaboration Git
-Nous utilisons un workflow professionnel :
-
-Branches : `feature/nom-tâche` pour chaque nouvelle fonctionnalité.
-
-Pull Requests : Chaque ajout de code est relu par le binôme avant fusion sur la branche main.
-
-Issues : Suivi des bugs et des tâches mathématiques.

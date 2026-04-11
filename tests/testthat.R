@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(Slitherlink_R)
+library(SlitherlinkR)
 
-test_check("Slitherlink_R")
+test_check("SlitherlinkR")

@@ -152,7 +152,7 @@ check_loop <- function(grid) {
 
   # --- Cas trivial : aucun segment tracé ---
   if (total_edges == 0L) {
-    return(list(ok = FALSE, message = "Aucun segment tracé."))
+    return(list(ok = FALSE, message = "Aucun segment trace."))
   }
 
   # --- DFS depuis le premier sommet ayant un segment ---
@@ -176,10 +176,10 @@ check_loop <- function(grid) {
 
   if (!all_connected) {
     return(list(ok = FALSE,
-                message = "Plusieurs boucles distinctes détectées."))
+                message = "Plusieurs boucles distinctes detectees."))
   }
 
-  list(ok = TRUE, message = "Boucle unique et fermée. ✓")
+  list(ok = TRUE, message = "Boucle unique et fermee.")
 }
 
 
@@ -203,7 +203,7 @@ validate_solution <- function(grid) {
     for (i in 1:nrow(res_cells$errors)) {
       e <- res_cells$errors[i, ]
       messages <- c(messages, sprintf(
-        "Case (%d,%d) : attendu %d segment(s), trouvé %d.",
+        "Case (%d,%d) : attendu %d segment(s), trouve %d.",
         e$row, e$col, e$expected, e$found
       ))
     }
@@ -214,7 +214,7 @@ validate_solution <- function(grid) {
   if (!res_deg$ok) {
     valid <- FALSE
     messages <- c(messages, sprintf(
-      "%d sommet(s) avec un degré invalide (ni 0 ni 2).",
+      "%d sommet(s) avec un degre invalide (ni 0 ni 2).",
       nrow(res_deg$errors)
     ))
   }
@@ -228,7 +228,7 @@ validate_solution <- function(grid) {
 
   # --- Résultat final ---
   if (valid) {
-    messages <- "Félicitations ! La solution est correcte. 🎉"
+    messages <- "Felicitations ! La solution est correcte."
   }
 
   list(valid = valid, messages = messages)

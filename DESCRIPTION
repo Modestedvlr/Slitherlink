@@ -16,7 +16,9 @@ Imports:
     magrittr,
     shiny,
     rlang,
-    Rcpp
+    Rcpp,
+    RSQLite,
+    DBI
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

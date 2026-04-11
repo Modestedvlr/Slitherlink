@@ -5,13 +5,13 @@
 #' @export
 new_slitherlink <- function(indices) {
   if (!is.matrix(indices)) {
-    stop("L'argument 'indices' doit être une matrice.")
+    stop("L'argument 'indices' doit etre une matrice.")
   }
 
   # Vérification des valeurs : uniquement 0, 1, 2, 3 ou NA
   valeurs_valides <- all(is.na(indices) | (indices %in% 0:3))
   if (!valeurs_valides) {
-    stop("Les valeurs de 'indices' doivent être 0, 1, 2, 3 ou NA.")
+    stop("Les valeurs de 'indices' doivent etre 0, 1, 2, 3 ou NA.")
   }
 
   n <- nrow(indices)
@@ -41,17 +41,17 @@ toggle_h_edge <- function(grid, r, c) {
 
   # --- Validation des coordonnées ---
   if (!is.numeric(r) || !is.numeric(c)) {
-    stop("Les coordonnées r et c doivent être numériques.")
+    stop("Les coordonnees r et c doivent etre numeriques.")
   }
   if (r < 1 || r > grid$n + 1) {
     stop(sprintf(
-      "Ligne r=%d invalide pour h_edges : doit être entre 1 et %d.",
+      "Ligne r=%d invalide pour h_edges : doit etre entre 1 et %d.",
       r, grid$n + 1
     ))
   }
   if (c < 1 || c > grid$m) {
     stop(sprintf(
-      "Colonne c=%d invalide pour h_edges : doit être entre 1 et %d.",
+      "Colonne c=%d invalide pour h_edges : doit etre entre 1 et %d.",
       c, grid$m
     ))
   }
@@ -73,17 +73,17 @@ toggle_v_edge <- function(grid, r, c) {
 
   # --- Validation des coordonnées ---
   if (!is.numeric(r) || !is.numeric(c)) {
-    stop("Les coordonnées r et c doivent être numériques.")
+    stop("Les coordonnees r et c doivent etre numeriques.")
   }
   if (r < 1 || r > grid$n) {
     stop(sprintf(
-      "Ligne r=%d invalide pour v_edges : doit être entre 1 et %d.",
+      "Ligne r=%d invalide pour v_edges : doit etre entre 1 et %d.",
       r, grid$n
     ))
   }
   if (c < 1 || c > grid$m + 1) {
     stop(sprintf(
-      "Colonne c=%d invalide pour v_edges : doit être entre 1 et %d.",
+      "Colonne c=%d invalide pour v_edges : doit etre entre 1 et %d.",
       c, grid$m + 1
     ))
   }
@@ -97,9 +97,9 @@ toggle_v_edge <- function(grid, r, c) {
 #' @export
 print.slitherlink <- function(x, ...) {
   cat("Jeu Slitherlink (Grille ", x$n, "x", x$m, ")\n", sep = "")
-  cat("Segments tracés : ",
+  cat("Segments traces : ",
       sum(x$h_edges == 1L) + sum(x$v_edges == 1L), "\n")
-  cat("Segments barrés : ",
+  cat("Segments barres : ",
       sum(x$h_edges == 2L) + sum(x$v_edges == 2L), "\n")
   invisible(x)
 }

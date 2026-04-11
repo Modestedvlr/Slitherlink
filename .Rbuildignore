@@ -1,2 +1,9 @@
+^README\.qmd$
+^README_files$
+^README_cache$
+^.*\.Rproj$
 ^Slitherlink_R\.Rproj$
 ^\.Rproj\.user$
+^Docs$
+^README\.html$
+^README\.qmd$
