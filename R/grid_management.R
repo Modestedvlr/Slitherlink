@@ -17,6 +17,9 @@ new_slitherlink <- function(indices) {
   n <- nrow(indices)
   m <- ncol(indices)
 
+  # Forcer le type integer pour que Rcpp détecte correctement les NA
+  storage.mode(indices) <- "integer"
+
   res <- list(
     n       = as.integer(n),
     m       = as.integer(m),

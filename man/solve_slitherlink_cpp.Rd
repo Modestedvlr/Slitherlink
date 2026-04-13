@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{solve_slitherlink_cpp}
 \alias{solve_slitherlink_cpp}
-\title{Solveur Slitherlink (Squelette de Phase 3)}
+\title{Solveur Slitherlink Optimisé C++}
 \usage{
 solve_slitherlink_cpp(h_edges, v_edges, indices)
 }
@@ -14,5 +14,5 @@ solve_slitherlink_cpp(h_edges, v_edges, indices)
 \item{indices}{Matrice des chiffres contraintes}
 }
 \description{
-Solveur Slitherlink (Squelette de Phase 3)
+Solveur Slitherlink Optimisé C++
 }
