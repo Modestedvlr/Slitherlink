@@ -43,15 +43,22 @@ plot_slitherlink <- function(grid) {
   df_edges <- dplyr::bind_rows(h_segs, v_segs)
 
   # 4. ggplot2 construction
-  edge_colors <- c("0" = "grey90", "1" = "black", "2" = "red")
-  edge_sizes  <- c("0" = 0.5,      "1" = 1.5,     "2" = 0.5)
+  edge_colors <- c("0" = "#1e2540",   # absent → bleu très sombre (presque invisible)
+                 "1" = "#6366f1",   # tracé  → violet lumineux
+                 "2" = "#ef4444")   # barré  → rouge vif
+edge_sizes  <- c("0" = 0.8,
+                 "1" = 2.5,
+                 "2" = 1.0)
 
   ggplot2::ggplot() +
     ggplot2::geom_segment(data = df_edges,
                           ggplot2::aes(x = x, y = y, xend = xend, yend = yend,
                                        color = status, size = status)) +
-    ggplot2::geom_point(data = df_points, ggplot2::aes(x = x, y = y), color = "grey50") +
-    ggplot2::geom_text(data = df_indices, ggplot2::aes(x = x, y = y, label = val), size = 6) +
+    ggplot2::geom_point(data = df_points, ggplot2::aes(x = x, y = y),
+                    color = "#3d4a6b", size = 1.5) +
+    ggplot2::geom_text(data = df_indices, ggplot2::aes(x = x, y = y, label = val),
+                   size = 6, color = "#94a3b8", fontface = "bold",
+                   family = "mono") +
     ggplot2::scale_color_manual(values = edge_colors, guide = "none") +
     ggplot2::scale_size_manual(values = edge_sizes, guide = "none") +
     ggplot2::coord_fixed() +
