@@ -1,6 +1,6 @@
 Package: SlitherlinkR
 Title: Jeu Interactif Slitherlink
-Date: 2026-04-13
+Date: 2026-04-17
 Version: 0.0.0.9000
 Authors@R: person("Prénom", "Nom", , "email@example.com", role = c("aut", "cre"))
 Description: Ce package implémente le jeu Slitherlink avec un solveur optimisé et une interface Shiny interactive.
