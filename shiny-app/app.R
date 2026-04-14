@@ -341,7 +341,7 @@ ui <- fluidPage(
         cursor: pointer; 
       }
       #grid_plot { 
-        cursor: pointer; 
+      cursor: pointer; 
       }
 
       /* ===== TIMER ===== */
@@ -650,7 +650,7 @@ ui <- fluidPage(
 
       # Règles
       tags$div(class="section-divider"),
-      tags$div(class="panel-title", "📖 Règles"),
+      tags$div(class="panel-title", "◎ Règles"),
       tags$ul(class="rules-list",
         tags$li("Tracez une seule boucle fermée"),
         tags$li("La boucle ne se croise pas"),
@@ -675,8 +675,7 @@ ui <- fluidPage(
 
       # Header leaderboard avec bouton reset
       tags$div(class="leaderboard-header",
-        tags$div(class="panel-title", style="margin-bottom:0",
-          "🏆 Classement"),
+        tags$div(class="panel-title", "◈ Classement"),
         tags$button(id="btn_reset_lb", class="btn btn-game btn-danger",
           style="width:auto; margin:0; padding:6px 12px; font-size:11px;",
           onclick="Shiny.setInputValue('btn_reset_lb', Math.random())",
@@ -687,7 +686,7 @@ ui <- fluidPage(
 
       # Sauvegarder
       tags$div(class="save-section",
-        tags$div(class="panel-title", "💾 Sauvegarder"),
+        tags$div(class="panel-title", "◉ Sauvegarder"),
         tags$div(class="save-input",
           textInput("pseudo_input", NULL,
                     placeholder="Votre pseudo...",
@@ -742,7 +741,7 @@ server <- function(input, output, session) {
     grid_state(new_slitherlink(puzzle$grid))
     start_time(Sys.time()); elapsed_time(0); timer_running(TRUE)
     feedback_msg(list(type="info",
-      text=paste0("◈ Nouveau puzzle — ",
+      text=paste0("◈ Nouveau puzzle généré — à vous de jouer !",
         switch(choix, facile="Facile 3×3", moyen="Moyen 4×4",
                difficile="Difficile 5×5"))))
   })
@@ -754,7 +753,7 @@ server <- function(input, output, session) {
     g$v_edges <- matrix(0L, nrow=g$n,   ncol=g$m+1)
     grid_state(g)
     start_time(Sys.time()); elapsed_time(0); timer_running(TRUE)
-    feedback_msg(list(type="info", text="↺ Grille réinitialisée."))
+    feedback_msg(list(type="info", text = "◈ Grille effacée — recommencez depuis le début."))
   })
 
   # --- Vérifier ---
@@ -764,12 +763,12 @@ server <- function(input, output, session) {
       timer_running(FALSE)
       t <- elapsed_time()
       feedback_msg(list(type="ok",
-        text=paste0("🎉 Félicitations ! Résolu en ",
-                    sprintf("%02d:%02d", floor(t/60), floor(t%%60)),
-                    " ! Sauvegardez votre score →")))
+        text = paste0("◈ Boucle correcte ! Résolu en ",
+              sprintf("%02d:%02d", floor(t/60), floor(t%%60)),
+              " — sauvegardez votre score →")))
     } else {
       feedback_msg(list(type="err",
-        text=paste0("✗ ", paste(res$messages, collapse=" · "))))
+        text=paste0("◈ ", paste(res$messages, collapse=" · "))))
     }
   })
 
@@ -779,9 +778,9 @@ server <- function(input, output, session) {
     g_solved <- tryCatch(solve_slitherlink(grid_state()), error=function(e) NULL)
     if (!is.null(g_solved)) {
       grid_state(g_solved)
-      feedback_msg(list(type="ok", text="◈ Solution trouvée par le solveur ILP."))
+      feedback_msg(list(type="ok", text="◈ Boucle résolue automatiquement — essayez de la trouver vous-même !"))
     } else {
-      feedback_msg(list(type="err", text="✗ Aucune solution trouvée."))
+      feedback_msg(list(type="err", text="◈ Ce puzzle ne possède pas de solution valide."))
     }
   })
 
@@ -791,7 +790,7 @@ server <- function(input, output, session) {
       con <- DBI::dbConnect(RSQLite::SQLite(), "leaderboard.db")
       DBI::dbExecute(con, "DELETE FROM scores")
       DBI::dbDisconnect(con)
-      feedback_msg(list(type="info", text="🗑 Leaderboard effacé."))
+      feedback_msg(list(type="info", text="◈ Classement réinitialisé."))
     }, error=function(e) NULL)
   })
 
@@ -799,7 +798,8 @@ server <- function(input, output, session) {
   observeEvent(input$btn_save, {
     pseudo <- trimws(input$pseudo_input)
     if (nchar(pseudo) == 0) {
-      feedback_msg(list(type="err", text="✗ Entrez un pseudo avant de sauvegarder."))
+      feedback_msg(list(type="err", text = paste0("◈ Score enregistré pour ", pseudo, " !")
+))
       return()
     }
     tryCatch({
