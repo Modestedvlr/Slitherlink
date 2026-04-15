@@ -1,120 +1,195 @@
-# SlitherlinkR : Package et Application Shiny pour le Jeu Slitherlink
+# Slitherlink
 
-[![R-CMD-check](https://img.shields.io/badge/Status-In--Development-orange.svg)](https://github.com/Modestedvlr/Slitherlink_R)
+[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen)](https://github.com/Modestedvlr/Slitherlink)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)]()
+[![R Version](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)]()
 
-## Présentation du Projet
+## Presentation
 
-SlitherlinkR est un package R complet dédié au jeu de logique Slitherlink. Ce projet intègre une logique métier robuste, un solveur haute performance en C++ et une interface utilisateur interactive sous Shiny.
+Package R complet implementant le jeu logique **Slitherlink**, developpe dans le cadre du Master 1 Statistique et Science des Donnees (SSD) a l'Universite de Montpellier.
 
-Réalisé dans le cadre de l'unité d'enseignement Programmation R à l'Université de Montpellier, ce package démontre l'intégration de plusieurs paradigmes de programmation.
-
-**Auteurs :** [Moussa DIAGNE] & [Dossou AGOSSOU] 
-
+**Auteurs :** Moussa DIAGNE & Dossou AGOSSOU  
 **Date de rendu :** 17 Avril 2026
 
 ---
 
-## Fonctionnalités Clés
+## Le Jeu Slitherlink
 
-**Interface Shiny Interactive :** Une application fluide permettant de jouer à la souris, avec détection automatique de la victoire.
+Le Slitherlink est un casse-tete logique japonais. Le joueur doit tracer
+une **unique boucle fermee** sur une grille de points en respectant les regles :
 
-**Solveur C++ Ultra-Rapide :** Implémentation d'un algorithme de backtracking récursif en C++ pour résoudre des grilles complexes en quelques millisecondes.
-
-**Système de Leaderboard :** Persistance des scores (temps de résolution) via une base de données SQLite intégrée.
-
-**Génération Algorithmique :** Création de nouvelles grilles garantissant une solution unique.
-
-**Validation Rigoureuse :** Moteur de vérification des règles (contraintes de cases, boucle unique via DFS).
+- La boucle doit etre **unique et fermee** (ni croisement, ni ramification)
+- Chaque sommet a exactement **0 ou 2 segments**
+- Le **chiffre** dans une case indique combien de ses 4 cotes appartiennent a la boucle
 
 ---
 
-## Architecture Technique
+## Architecture du Package
 
-### 1. Programmation Orientée Objet (S3) :
+```
+SlitherlinkR/
+├── R/
+│   ├── grid_management.R   # Classe S3, constructeur, toggle
+│   ├── grid_plot.R         # Visualisation ggplot2
+│   ├── validator.R         # Moteur de verification (DFS)
+│   ├── solver.R            # Solveur ILP (lpSolve)
+│   ├── solver_interface.R  # Interface solveur
+│   ├── generator.R         # Generateur de puzzles (unicite garantie)
+│   ├── database.R          # Leaderboard SQLite
+│   └── run_app.R           # Lancement application Shiny
+├── src/
+│   └── solver.cpp          # Solveur backtracking C++ (Rcpp)
+├── shiny-app/
+│   └── app.R               # Application Shiny interactive
+├── tests/testthat/
+│   ├── test-grid.R         # Tests structure et toggle (8 tests)
+│   ├── test-validator.R    # Tests validateur (18 tests)
+│   ├── test-generator.R    # Tests generateur (8 tests)
+│   ├── test-solver.R       # Tests solveur ILP (5 tests)
+│   └── test-database.R     # Tests SQLite (4 tests)
+└── man/                    # Documentation roxygen2 (16 fichiers)
+```
 
-Le package définit une classe slitherlink structurée de manière efficiente :
+---
 
-- Stockage optimisé des arêtes (matrices d'entiers).
+## Modelisation Mathematique
 
-- Méthodes `plot()` basées sur `ggplot2` utilisant la grammaire des graphiques pour un rendu professionnel et clair.
+### Structure de donnees — Classe S3 `slitherlink`
 
+```r
+list(
+  n       = 4L,                              # lignes de cases
+  m       = 4L,                              # colonnes de cases
+  indices = matrix(..., nrow=4, ncol=4),     # chiffres (0-3 ou NA)
+  h_edges = matrix(0L, nrow=5, ncol=4),      # segments horizontaux
+  v_edges = matrix(0L, nrow=4, ncol=5)       # segments verticaux
+)
+```
 
-### 2. Performance et C++ (Rcpp) :
+Les segments ont 3 etats : `0L` (absent), `1L` (trace), `2L` (barre impossible).
 
-Le cœur du solveur est déporté en C++ pour pallier les limitations de vitesse de R sur les algorithmes récursifs.
+### Solveur ILP — Programmation Lineaire en Nombres Entiers
 
-- **Backtracking avec Élidage :** Le solveur explore l'arbre des possibles et coupe les branches dès qu'une contrainte de Slitherlink est violée.
+Le solveur principal utilise **lpSolve** avec :
 
-- **Interpénétrabilité :** Utilisation de RcppExports pour une communication transparente entre les données R et les pointeurs C++.
+- **Variables** : `x[e] ∈ {0,1}` pour chaque arete, `y[v] ∈ {0,1}` pour chaque sommet
+- **Contrainte cases** : `Σ(4 aretes de la case) = chiffre`
+- **Contrainte degre** : `Σ(aretes de v) = 2 × y[v]`
+- **Elimination sous-tours** : algorithme iteratif BFS
 
+**Performances mesurées :**
 
-### Gestion des Données (SQL) :
+| Taille | Temps  | Resultat  |
+|--------|--------|-----------|
+| 3×3    | ~0.03s | Valide    |
+| 4×4    | ~0.14s | Valide    |
+| 5×5    | ~0.15s | Valide    |
 
-Utilisation des packages `DBI` et `RSQLite` pour gérer un tableau d'honneur (Leaderboard) :
+### Generateur — Unicite Garantie
 
-- Archivage des pseudos, temps et dates.
-
-- Requêtes SQL pour l'affichage du Top 10 au sein de l'interface Shiny.
-
-
-### 4. Qualité du Code :
-
-- **Tests Unitaires :** Plus de 25 tests avec le framework testthat couvrant la logique de validation et le solveur.
-
-- **Documentation :** Entièrement générée avec `roxygen2`.
+```
+1. Partir d'une boucle valide connue
+2. Masquer aleatoirement des cases (30/50/70% selon difficulte)
+3. Verifier l'unicite : resoudre + interdire la solution + re-resoudre
+4. Si une 2eme solution existe → recommencer (max 20 tentatives)
+```
 
 ---
 
 ## Installation
 
-Vous pouvez installer la version de développement depuis GitHub :
+```r
+# Installer les dependances
+install.packages(c(
+  "shiny", "ggplot2", "dplyr", "magrittr",
+  "Rcpp", "lpSolve", "DBI", "RSQLite", "testthat"
+))
 
-```{r}
-# Installation des dépendances nécessaires
-install.packages(c("shiny", "ggplot2", "Rcpp", "RSQLite", "DBI", "dplyr", "testthat"))
-
-# Chargement du package
+# Charger le package en developpement
 devtools::load_all()
 
-# Lancement du jeu
+# Lancer l'application
 run_slitherlink()
 ```
 
 ---
 
-## Structure du Dépôt
+## Utilisation de l'API
 
-- `R/` : Logique métier (validateurs, gestion de grille, interface SQL).
-- `src/` : Code source C++ (solver.cpp).
-- `inst/shiny-app/` : Interface utilisateur et réactivité Shiny.
-- `tests/`` : Suite de tests automatisés.
+```r
+# Creer une grille
+m <- matrix(c(2,1,1,2, 1,0,0,1, 1,0,0,1, 2,1,1,2), nrow=4, byrow=TRUE)
+g <- new_slitherlink(m)
+
+# Afficher la grille
+plot_slitherlink(g)
+
+# Tracer un segment (clic)
+g <- toggle_h_edge(g, 1, 1)
+
+# Valider la solution
+validate_solution(g)
+
+# Resoudre automatiquement (ILP)
+g_solved <- solve_slitherlink(g)
+
+# Generer un puzzle avec unicite garantie
+h <- matrix(0L,5,4); v <- matrix(0L,4,5)
+h[1,] <- 1L; h[5,] <- 1L; v[,1] <- 1L; v[,5] <- 1L
+puzzle <- generate_puzzle(h, v, difficulty = "moyen")
+```
+
+---
+
+## Application Shiny
+
+L'application offre une experience de jeu complete :
+
+- **3 niveaux** : Facile (3×3), Moyen (4×4), Difficile (5×5)
+- **Puzzles uniques** : solution unique garantie mathematiquement
+- **Timer** reactif mis a jour chaque seconde
+- **Solveur ILP** integre (bouton Resoudre)
+- **Leaderboard** SQLite persistant avec sauvegarde des scores
+- **Design** premium theme sombre
+
+---
+
+## Tests
+
+```r
+devtools::test()
+# [ FAIL 0 | WARN 0 | SKIP 0 | PASS 43 ]
+
+devtools::check()
+# 0 errors | 0 warnings | 0 notes
+```
+
+| Fichier          | Contexte                              | Tests  |
+|------------------|---------------------------------------|--------|
+| test-grid.R      | Structure S3, toggle, validation      | 8      |
+| test-validator.R | check_cells, check_degree, check_loop | 18     |
+| test-generator.R | generate_puzzle, unicite              | 8      |
+| test-solver.R    | solve_slitherlink ILP                 | 5      |
+| test-database.R  | init_db, save_score                   | 4      |
+| **Total**        |                                       | **43** |
+
+---
+
+## Phases de Developpement
+
+| Phases   | Contenus                              | Auteurs        |
+|---------|----------------------------------------|----------------|
+| Phase 1 | Structure S3, ggplot2, toggle          | Dossou AGOSSOU |
+| Phase 2 | Validateur DFS, 26 tests               | Moussa DIAGNE  |
+| Phase 3 | Solveur C++ Rcpp                       | Dossou AGOSSOU |
+| Phase 4 | Solveur ILP, generateur, Shiny, SQLite | Moussa DIAGNE  |
+| Phase 5 | Tests complets, documentation, unicite | Dossou AGOSSOU |
 
 ---
 
 ## Collaboration Git
 
-Le projet a été mené en utilisant les bonnes pratiques de développement collaboratif :
-
-- Utilisation systématique de branches pour les fonctionnalités
-
-- Relecture de code croisée.
-
-- Suivi des bugs via les Issues GitHub.
-
-
----
-
-## Plan de Développement (Roadmap)
-
-Phase 1 : Définition de la structure de données S3 pour la grille.
-
-Phase 2 : Implémentation du moteur de vérification (boucle unique, connectivité).
-
-Phase 3 : Développement du solveur C++ (Rcpp).
-
-Phase 4 : Création de l'interface Shiny (Module UI/Server).
-
-Phase 5 : Finalisation de la documentation et tests unitaires.
-
----
+- **Branches** : `dev` (Phase 1) / `dev2` (Phase 2, 3, 4 & 5)
+- **Pull Requests** : chaque phase reviewee avant fusion sur `main`
+- **Issues** : suivi des bugs et taches mathematiques
