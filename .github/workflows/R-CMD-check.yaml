@@ -1,0 +1,45 @@
+# =============================================================
+# GitHub Actions - R CMD check + Tests unitaires
+# Slitherlink
+# =============================================================
+
+on:
+  push:
+    branches: [main, dev2]
+  pull_request:
+    branches: [main]
+
+name: R-CMD-check
+
+jobs:
+  R-CMD-check:
+    runs-on: windows-latest  # Windows comme vos machines
+
+    steps:
+      # 1. Récupérer le code
+      - uses: actions/checkout@v4
+
+      # 2. Installer R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4.0'
+          use-public-rspm: true
+
+      # 3. Installer Rtools (nécessaire pour Rcpp)
+      - uses: r-lib/actions/setup-rtools@v2
+
+      # 4. Installer les dépendances système
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            any::devtools
+          needs: check
+
+      # 5. Lancer R CMD check
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          error-on: '"error"'
+        env:
+          _R_CHECK_SYSTEM_CLOCK_: 0

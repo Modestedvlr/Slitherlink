@@ -8,3 +8,4 @@
 ^README\.html$
 ^README\.qmd$
 ^shiny-app$
+^\.github$

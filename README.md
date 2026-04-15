@@ -1,6 +1,6 @@
 # Slitherlink
 
-[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen)](https://github.com/Modestedvlr/Slitherlink)
+[![R-CMD-check](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)]()
 [![R Version](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)]()
