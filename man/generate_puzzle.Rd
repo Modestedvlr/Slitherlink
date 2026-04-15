@@ -2,20 +2,23 @@
 % Please edit documentation in R/generator.R
 \name{generate_puzzle}
 \alias{generate_puzzle}
-\title{Générer un puzzle Slitherlink depuis une boucle avec indices masqués}
+\title{Generer un puzzle Slitherlink avec solution unique garantie}
 \usage{
-generate_puzzle(h_sol, v_sol, difficulty = "moyen")
+generate_puzzle(h_sol, v_sol, difficulty = "moyen", max_attempts = 20)
 }
 \arguments{
 \item{h_sol}{Matrice h_edges de la solution}
 
 \item{v_sol}{Matrice v_edges de la solution}
 
-\item{difficulty}{"facile" (peu de NA), "moyen", "difficile" (beaucoup de NA)}
+\item{difficulty}{Niveau : "facile" (30 pct NA), "moyen" (50 pct), "difficile" (70 pct)}
+
+\item{max_attempts}{Nombre maximum de tentatives (defaut 20)}
 }
 \value{
-Une liste avec grid (indices partiels) et solution
+Une liste avec \code{grid} (indices partiels) et \code{solution}
 }
 \description{
-Générer un puzzle Slitherlink depuis une boucle avec indices masqués
+Part d'une boucle valide, masque aleatoirement des indices selon
+la difficulte, et verifie l'unicite de la solution via le solveur ILP.
 }
