@@ -7,7 +7,7 @@
 
 ## Presentation
 
-Package R complet implementant le jeu logique **Slitherlink**, developpe dans le cadre du Master 1 Statistique et Science des Donnees (SSD) a l'Universite de Montpellier.
+Package R complet implementant le jeu logique **Slitherlink**, developpé dans le cadre du Master 1 Statistique et Science des Données (SSD) a l'Université de Montpellier.
 
 **Auteurs :** Moussa DIAGNE & Dossou AGOSSOU  
 **Date de rendu :** 17 Avril 2026
@@ -17,11 +17,11 @@ Package R complet implementant le jeu logique **Slitherlink**, developpe dans le
 ## Le Jeu Slitherlink
 
 Le Slitherlink est un casse-tete logique japonais. Le joueur doit tracer
-une **unique boucle fermee** sur une grille de points en respectant les regles :
+une **unique boucle fermée** sur une grille de points en respectant les règles :
 
-- La boucle doit etre **unique et fermee** (ni croisement, ni ramification)
+- La boucle doit être **unique et fermée** (ni croisement, ni ramification)
 - Chaque sommet a exactement **0 ou 2 segments**
-- Le **chiffre** dans une case indique combien de ses 4 cotes appartiennent a la boucle
+- Le **chiffre** dans une case indique combien de ses 4 côtés appartiennent a la boucle
 
 ---
 
@@ -53,9 +53,9 @@ SlitherlinkR/
 
 ---
 
-## Modelisation Mathematique
+## Modélisation Mathématique
 
-### Structure de donnees — Classe S3 `slitherlink`
+### Structure de données — Classe S3 `slitherlink`
 
 ```r
 list(
@@ -67,32 +67,32 @@ list(
 )
 ```
 
-Les segments ont 3 etats : `0L` (absent), `1L` (trace), `2L` (barre impossible).
+Les segments ont 3 états : `0L` (absent), `1L` (tracé), `2L` (barre impossible).
 
 ### Solveur ILP — Programmation Lineaire en Nombres Entiers
 
 Le solveur principal utilise **lpSolve** avec :
 
-- **Variables** : `x[e] ∈ {0,1}` pour chaque arete, `y[v] ∈ {0,1}` pour chaque sommet
+- **Variables** : `x[e] ∈ {0,1}` pour chaque arête, `y[v] ∈ {0,1}` pour chaque sommet
 - **Contrainte cases** : `Σ(4 aretes de la case) = chiffre`
-- **Contrainte degre** : `Σ(aretes de v) = 2 × y[v]`
+- **Contrainte degré** : `Σ(aretes de v) = 2 × y[v]`
 - **Elimination sous-tours** : algorithme iteratif BFS
 
 **Performances mesurées :**
 
-| Taille | Temps  | Resultat  |
+| Taille | Temps  | Résultat  |
 |--------|--------|-----------|
-| 3×3    | ~0.03s | Valide    |
-| 4×4    | ~0.14s | Valide    |
-| 5×5    | ~0.15s | Valide    |
+| 3×3    | ~0.03s | Validé    |
+| 4×4    | ~0.14s | Validé    |
+| 5×5    | ~0.15s | Validé    |
 
-### Generateur — Unicite Garantie
+### Générateur — Unicité Garantie
 
 ```
 1. Partir d'une boucle valide connue
-2. Masquer aleatoirement des cases (30/50/70% selon difficulte)
-3. Verifier l'unicite : resoudre + interdire la solution + re-resoudre
-4. Si une 2eme solution existe → recommencer (max 20 tentatives)
+2. Masquer aleatoirement des cases (30/50/70% selon difficulté)
+3. Verifier l'unicité : résoudre + interdire la solution + re-résoudre
+4. Si une 2ème solution existe → recommencer (max 20 tentatives)
 ```
 
 ---
@@ -100,13 +100,13 @@ Le solveur principal utilise **lpSolve** avec :
 ## Installation
 
 ```r
-# Installer les dependances
+# Installer les dépendances
 install.packages(c(
   "shiny", "ggplot2", "dplyr", "magrittr",
   "Rcpp", "lpSolve", "DBI", "RSQLite", "testthat"
 ))
 
-# Charger le package en developpement
+# Charger le package en développement
 devtools::load_all()
 
 # Lancer l'application
@@ -118,7 +118,7 @@ run_slitherlink()
 ## Utilisation de l'API
 
 ```r
-# Creer une grille
+# Créer une grille
 m <- matrix(c(2,1,1,2, 1,0,0,1, 1,0,0,1, 2,1,1,2), nrow=4, byrow=TRUE)
 g <- new_slitherlink(m)
 
@@ -131,10 +131,10 @@ g <- toggle_h_edge(g, 1, 1)
 # Valider la solution
 validate_solution(g)
 
-# Resoudre automatiquement (ILP)
+# Résoudre automatiquement (ILP)
 g_solved <- solve_slitherlink(g)
 
-# Generer un puzzle avec unicite garantie
+# Génerer un puzzle avec unicité garantie
 h <- matrix(0L,5,4); v <- matrix(0L,4,5)
 h[1,] <- 1L; h[5,] <- 1L; v[,1] <- 1L; v[,5] <- 1L
 puzzle <- generate_puzzle(h, v, difficulty = "moyen")
@@ -144,14 +144,14 @@ puzzle <- generate_puzzle(h, v, difficulty = "moyen")
 
 ## Application Shiny
 
-L'application offre une experience de jeu complete :
+L'application offre une experience de jeu complète :
 
 - **3 niveaux** : Facile (3×3), Moyen (4×4), Difficile (5×5)
-- **Puzzles uniques** : solution unique garantie mathematiquement
-- **Timer** reactif mis a jour chaque seconde
-- **Solveur ILP** integre (bouton Resoudre)
+- **Puzzles uniques** : solution unique garantie mathématiquement
+- **Timer** réactif mis a jour chaque seconde
+- **Solveur ILP** integré (bouton Resoudre)
 - **Leaderboard** SQLite persistant avec sauvegarde des scores
-- **Design** premium theme sombre
+- **Design** premium thème sombre
 
 ---
 
@@ -176,7 +176,7 @@ devtools::check()
 
 ---
 
-## Phases de Developpement
+## Phases de Développement
 
 | Phases   | Contenus                              | Auteurs        |
 |---------|----------------------------------------|----------------|
@@ -191,5 +191,5 @@ devtools::check()
 ## Collaboration Git
 
 - **Branches** : `dev` (Phase 1) / `dev2` (Phase 2, 3, 4 & 5)
-- **Pull Requests** : chaque phase reviewee avant fusion sur `main`
+- **Pull Requests** : chaque phase est revue avant fusion sur `main`
 - **Issues** : suivi des bugs et taches mathematiques
