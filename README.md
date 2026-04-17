@@ -230,31 +230,17 @@ devtools::check()
 
 | Phase | Contenu | Auteur |
 |-------|---------|--------|
-| Phase 1 | Structure S3, ggplot2, toggle des segments | Moussa DIAGNE |
-| Phase 2 | Validateur DFS, 26 tests unitaires | Dossou AGOSSOU |
-| Phase 3 | Solveur C++ Rcpp backtracking | Moussa DIAGNE |
-| Phase 4 | Solveur ILP, generateur, Shiny, SQLite | Dossou AGOSSOU |
-| Phase 5 | Tests complets, documentation roxygen2, CI/CD | Moussa DIAGNE |
-| Phase 6 | Unicite garantie, 8 boucles/niveau, deploiement | Dossou AGOSSOU |
-
----
-
-## Workflow Git
-
-```
-main   <- branche stable (production)
-  |
-  +-- dev   : Phase 1 initiale (Moussa DIAGNE)
-  +-- dev2  : Developpement complet (Phases 2 a 6)
-
-Merge final : dev2 -> main avant soumission
-```
+| Phase 1 | Structure S3, ggplot2, toggle des segments | Dossou AGOSSOU |
+| Phase 2 | Validateur DFS, 26 tests unitaires |  Moussa DIAGNE |
+| Phase 3 | Solveur C++ Rcpp backtracking | Dossou AGOSSOU |
+| Phase 4 | Solveur ILP, generateur, Shiny, SQLite | Moussa DIAGNE |
+| Phase 5 | Tests complets, documentation roxygen2, CI/CD | Dossou AGOSSOU |
 
 ---
 
 ## CI/CD GitHub Actions
 
-Le workflow `.github/workflows/R-CMD-check.yaml` se declenche a chaque push sur `main` ou `dev2` :
+Le workflow `.github/workflows/R-CMD-check.yaml` se declenche a chaque push sur `main` ou `dev` :
 
 - Environnement : Windows Latest + R 4.4.0
 - Etapes : checkout, setup-r, setup-r-dependencies, check-r-package
