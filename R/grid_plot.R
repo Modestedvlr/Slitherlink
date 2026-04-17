@@ -53,14 +53,14 @@ edge_sizes  <- c("0" = 0.8,
   ggplot2::ggplot() +
     ggplot2::geom_segment(data = df_edges,
                           ggplot2::aes(x = x, y = y, xend = xend, yend = yend,
-                                       color = status, size = status)) +
+                                       color = status, linewidth = status)) +
     ggplot2::geom_point(data = df_points, ggplot2::aes(x = x, y = y),
                     color = "#3d4a6b", size = 1.5) +
     ggplot2::geom_text(data = df_indices, ggplot2::aes(x = x, y = y, label = val),
                    size = 6, color = "#94a3b8", fontface = "bold",
                    family = "mono") +
     ggplot2::scale_color_manual(values = edge_colors, guide = "none") +
-    ggplot2::scale_size_manual(values = edge_sizes, guide = "none") +
+    ggplot2::scale_linewidth_manual(values = edge_sizes, guide = "none") +
     ggplot2::coord_fixed() +
     ggplot2::theme_void()
 }
