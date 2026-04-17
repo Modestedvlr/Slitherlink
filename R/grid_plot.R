@@ -60,7 +60,7 @@ edge_widths  <- c("0" = 0.8,
                    size = 6, color = "#94a3b8", fontface = "bold",
                    family = "mono") +
     ggplot2::scale_color_manual(values = edge_colors, guide = "none") +
-    ggplot2::scale_linewidth_manual(values = edge_sizes, guide = "none") +
+    ggplot2::scale_linewidth_manual(values = edge_widths, guide = "none") +
     ggplot2::coord_fixed() +
     ggplot2::theme_void()
 }
