@@ -2,17 +2,20 @@
 % Please edit documentation in R/generator.R
 \name{is_unique_solution}
 \alias{is_unique_solution}
-\title{Vérifier l'unicité (Interne)}
+\title{Verifier qu'un puzzle a une solution unique}
 \usage{
 is_unique_solution(grid, sol_h, sol_v)
 }
 \arguments{
-\item{grid}{Objet de classe slitherlink ou liste contenant n, m et indices}
+\item{grid}{Un objet de classe \code{slitherlink}}
 
-\item{sol_h}{Matrice des segments horizontaux de la solution connue}
+\item{sol_h}{Matrice h_edges de la solution}
 
-\item{sol_v}{Matrice des segments verticaux de la solution connue}
+\item{sol_v}{Matrice v_edges de la solution}
+}
+\value{
+TRUE si la solution est unique, FALSE sinon
 }
 \description{
-Vérifier l'unicité (Interne)
+Verifier qu'un puzzle a une solution unique
 }

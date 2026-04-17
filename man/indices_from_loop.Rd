@@ -7,7 +7,12 @@
 indices_from_loop(h, v)
 }
 \arguments{
-\item{h, v}{Matrices de segments}
+\item{h}{Matrice h_edges de la solution}
+
+\item{v}{Matrice v_edges de la solution}
+}
+\value{
+Matrice d'indices (0-3)
 }
 \description{
 Calculer les indices depuis une boucle
