@@ -1,16 +1,43 @@
 # Slitherlink
 
 [![R-CMD-check](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml)
+[![Shiny App](https://img.shields.io/badge/Shiny-Live_Demo-blue?logo=rstudio&style=for-the-badge)](https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)]()
 [![R Version](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)]()
 
-## Presentation
+## Présentation
 
-Package R complet implementant le jeu logique **Slitherlink**, developpé dans le cadre du Master 1 Statistique et Science des Données (SSD) a l'Université de Montpellier.
+**Slitherlink** est un package R complet implémentant le jeu logique japonais **Slitherlink**. Ce projet a été développé dans le cadre de l'unité d'enseignement Programmation R du Master 1 Statistique et Science des Données (SSD) à l'Université de Montpellier.
 
 **Auteurs :** Moussa DIAGNE & Dossou AGOSSOU  
 **Date de rendu :** 17 Avril 2026
+
+---
+
+## Jouer en ligne
+
+Une version interactive du jeu est disponible sans installation à cette adresse :
+
+**[Démo Live - SlitherlinkR](https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/)**
+
+---
+
+## Installation
+
+Vous pouvez installer la version de développement de SlitherlinkR directement depuis GitHub :
+
+```r
+# Installer remotes si nécessaire
+if (!requireNamespace("remotes")) install.packages("remotes")
+
+# Installer le package SlitherlinkR
+remotes::install_github("Modestedvlr/Slitherlink")
+
+# Lancer l'application
+library(SlitherlinkR)
+run_slitherlink()
+```
 
 ---
 
@@ -20,8 +47,9 @@ Le Slitherlink est un casse-tete logique japonais. Le joueur doit tracer
 une **unique boucle fermée** sur une grille de points en respectant les règles :
 
 - La boucle doit être **unique et fermée** (ni croisement, ni ramification)
-- Chaque sommet a exactement **0 ou 2 segments**
-- Le **chiffre** dans une case indique combien de ses 4 côtés appartiennent a la boucle
+- Chaque point (sommet) de la boucle doit être connecté à exactement **0 ou 2 segments**
+- Les **chiffres** dans les cases indiquent combien de ses quatre côtés appartiennent à la boucle. Les cases vides n'ont aucune contrainte.
+
 
 ---
 
@@ -53,109 +81,24 @@ SlitherlinkR/
 
 ---
 
-## Modélisation Mathématique
+## Modélisation et Algorithmes
 
 ### Structure de données — Classe S3 `slitherlink`
+La grille est gérée par un objet S3 contenant les dimensions, les chiffres imposés et deux matrices d'états pour les segments horizontaux et verticaux (0 : absent, 1 : tracé, 2 : marqué d'une croix).
 
-```r
-list(
-  n       = 4L,                              # lignes de cases
-  m       = 4L,                              # colonnes de cases
-  indices = matrix(..., nrow=4, ncol=4),     # chiffres (0-3 ou NA)
-  h_edges = matrix(0L, nrow=5, ncol=4),      # segments horizontaux
-  v_edges = matrix(0L, nrow=4, ncol=5)       # segments verticaux
-)
-```
+### Double Solveur : ILP & Backtracking
+Le package intègre deux moteurs de résolution :
+- **ILP (lpSolve)** : Résolution par programmation linéaire en nombres entiers (utilisé pour la garantie d'unicité).
+- **C++ (Rcpp)** : Un solveur par backtracking récursif pour une performance maximale lors de l'exécution en temps réel.
 
-Les segments ont 3 états : `0L` (absent), `1L` (tracé), `2L` (barre impossible).
-
-### Solveur ILP — Programmation Lineaire en Nombres Entiers
-
-Le solveur principal utilise **lpSolve** avec :
-
-- **Variables** : `x[e] ∈ {0,1}` pour chaque arête, `y[v] ∈ {0,1}` pour chaque sommet
-- **Contrainte cases** : `Σ(4 aretes de la case) = chiffre`
-- **Contrainte degré** : `Σ(aretes de v) = 2 × y[v]`
-- **Elimination sous-tours** : algorithme iteratif BFS
-
-**Performances mesurées :**
-
-| Taille | Temps  | Résultat  |
-|--------|--------|-----------|
-| 3×3    | ~0.03s | Validé    |
-| 4×4    | ~0.14s | Validé    |
-| 5×5    | ~0.15s | Validé    |
-
-### Générateur — Unicité Garantie
-
-```
-1. Partir d'une boucle valide connue
-2. Masquer aleatoirement des cases (30/50/70% selon difficulté)
-3. Verifier l'unicité : résoudre + interdire la solution + re-résoudre
-4. Si une 2ème solution existe → recommencer (max 20 tentatives)
-```
+### Générateur avec Unicité Garantie
+Le générateur garantit qu'un puzzle n'a qu'une seule et unique solution possible. Il utilise une boucle connue, masque des cases selon la difficulté, et vérifie mathématiquement (via le solveur ILP) qu'aucune autre solution ne peut exister avant de proposer le puzzle au joueur.
 
 ---
 
-## Installation
+## Tests et Qualité
 
-```r
-# Installer les dépendances
-install.packages(c(
-  "shiny", "ggplot2", "dplyr", "magrittr",
-  "Rcpp", "lpSolve", "DBI", "RSQLite", "testthat"
-))
-
-# Charger le package en développement
-devtools::load_all()
-
-# Lancer l'application
-run_slitherlink()
-```
-
----
-
-## Utilisation de l'API
-
-```r
-# Créer une grille
-m <- matrix(c(2,1,1,2, 1,0,0,1, 1,0,0,1, 2,1,1,2), nrow=4, byrow=TRUE)
-g <- new_slitherlink(m)
-
-# Afficher la grille
-plot_slitherlink(g)
-
-# Tracer un segment (clic)
-g <- toggle_h_edge(g, 1, 1)
-
-# Valider la solution
-validate_solution(g)
-
-# Résoudre automatiquement (ILP)
-g_solved <- solve_slitherlink(g)
-
-# Génerer un puzzle avec unicité garantie
-h <- matrix(0L,5,4); v <- matrix(0L,4,5)
-h[1,] <- 1L; h[5,] <- 1L; v[,1] <- 1L; v[,5] <- 1L
-puzzle <- generate_puzzle(h, v, difficulty = "moyen")
-```
-
----
-
-## Application Shiny
-
-L'application offre une experience de jeu complète :
-
-- **3 niveaux** : Facile (3×3), Moyen (4×4), Difficile (5×5)
-- **Puzzles uniques** : solution unique garantie mathématiquement
-- **Timer** réactif mis a jour chaque seconde
-- **Solveur ILP** integré (bouton Resoudre)
-- **Leaderboard** SQLite persistant avec sauvegarde des scores
-- **Design** premium thème sombre
-
----
-
-## Tests
+Le package respecte les standards de développement R avec une couverture de tests complète.
 
 ```r
 devtools::test()
@@ -165,14 +108,13 @@ devtools::check()
 # 0 errors | 0 warnings | 0 notes
 ```
 
-| Fichier          | Contexte                              | Tests  |
-|------------------|---------------------------------------|--------|
-| test-grid.R      | Structure S3, toggle, validation      | 8      |
-| test-validator.R | check_cells, check_degree, check_loop | 18     |
-| test-generator.R | generate_puzzle, unicite              | 8      |
-| test-solver.R    | solve_slitherlink ILP                 | 5      |
-| test-database.R  | init_db, save_score                   | 4      |
-| **Total**        |                                       | **43** |
+| Fichier          | Périmètre de test                              | Nb Tests |
+|------------------|------------------------------------------------|----------|
+| test-grid.R      | Structure S3, toggle segments, erreurs limites | 8        |
+| test-validator.R | Vérification des cases, sommets et boucle unique | 18       |
+| test-generator.R | Génération de puzzle et vérification d'unicité | 8        |
+| test-solver.R    | Résolution complète par ILP                    | 5        |
+| test-database.R  | Création base de données et stockage scores    | 4        |
 
 ---
 
@@ -190,6 +132,9 @@ devtools::check()
 
 ## Collaboration Git
 
-- **Branches** : `dev` (Phase 1) / `dev2` (Phase 2, 3, 4 & 5)
-- **Pull Requests** : chaque phase est revue avant fusion sur `main`
-- **Issues** : suivi des bugs et taches mathematiques
+Le projet a suivi un flux de travail rigoureux :
+- **Développement par phases** : Chaque fonctionnalité majeure a fait l'objet d'une phase dédiée (voir rapport technique).
+- **Intégration Continue (CI)** : GitHub Actions lance `R CMD check` à chaque push pour garantir la stabilité du code.
+- **Merge Requests** : Fusion systématique sur la branche `main` après validation des tests.
+
+---
