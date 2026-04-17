@@ -2,7 +2,10 @@ Package: SlitherlinkR
 Title: Jeu Slitherlink
 Date: 2026-04-15
 Version: 0.0.0.9000
-Authors@R: person("Dossou AGOSSOU", "Moussa DIAGNE", , "dmagossou12@gmail.com", "mdiagne347@gmail.com" role = c("aut", "cre"))
+Authors@R: c(
+  person("Dossou", "AGOSSOU", email = "dmagossou12@gmail.com", role = c("aut", "cre")),
+  person("Moussa", "DIAGNE", email = "mdiagne347@gmail.com", role = "aut")
+  )
 Description: Ce package implémente le jeu Slitherlink avec un solveur optimisé et une interface Shiny interactive.
 License: MIT + file LICENSE
 Encoding: UTF-8
