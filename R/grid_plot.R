@@ -46,7 +46,7 @@ plot_slitherlink <- function(grid) {
   edge_colors <- c("0" = "#1e2540",   # absent → bleu très sombre (presque invisible)
                  "1" = "#6366f1",   # tracé  → violet lumineux
                  "2" = "#ef4444")   # barré  → rouge vif
-edge_sizes  <- c("0" = 0.8,
+edge_widths  <- c("0" = 0.8,
                  "1" = 2.5,
                  "2" = 1.0)
 
