@@ -2,10 +2,17 @@
 % Please edit documentation in R/generator.R
 \name{is_unique_solution}
 \alias{is_unique_solution}
-\title{Verifier l'unicité (Interne)}
+\title{Vérifier l'unicité (Interne)}
 \usage{
 is_unique_solution(grid, sol_h, sol_v)
 }
+\arguments{
+\item{grid}{Objet de classe slitherlink ou liste contenant n, m et indices}
+
+\item{sol_h}{Matrice des segments horizontaux de la solution connue}
+
+\item{sol_v}{Matrice des segments verticaux de la solution connue}
+}
 \description{
-Verifier l'unicité (Interne)
+Vérifier l'unicité (Interne)
 }

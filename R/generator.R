@@ -51,7 +51,10 @@ indices_from_loop <- function(h, v) {
   mat
 }
 
-#' Verifier l'unicité (Interne)
+#' Vérifier l'unicité (Interne)
+#' @param grid Objet de classe slitherlink ou liste contenant n, m et indices
+#' @param sol_h Matrice des segments horizontaux de la solution connue
+#' @param sol_v Matrice des segments verticaux de la solution connue
 #' @export
 is_unique_solution <- function(grid, sol_h, sol_v) {
   n <- grid$n; m <- grid$m
@@ -114,6 +117,9 @@ is_unique_solution <- function(grid, sol_h, sol_v) {
 }
 
 #' Générer un puzzle Slitherlink
+#' @param difficulty Niveau de difficulté ("facile", "moyen" ou "difficile")
+#' @param n Nombre de lignes de cases (défaut 5)
+#' @param m Nombre de colonnes de cases (défaut 5)
 #' @export
 generate_puzzle <- function(difficulty = "moyen", n = 5, m = 5) {
   sol <- generate_random_loop(n, m)

@@ -6,6 +6,13 @@
 \usage{
 generate_puzzle(difficulty = "moyen", n = 5, m = 5)
 }
+\arguments{
+\item{difficulty}{Niveau de difficulté ("facile", "moyen" ou "difficile")}
+
+\item{n}{Nombre de lignes de cases (défaut 5)}
+
+\item{m}{Nombre de colonnes de cases (défaut 5)}
+}
 \description{
 Générer un puzzle Slitherlink
 }
