@@ -1,55 +1,49 @@
-# Slitherlink
+# SlitherlinkR
 
 [![R-CMD-check](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Modestedvlr/Slitherlink/actions/workflows/R-CMD-check.yaml)
-[![Shiny App](https://img.shields.io/badge/Shiny-Live_Demo-blue?logo=rstudio&style=for-the-badge)](https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-51%20passed-brightgreen)]()
 [![R Version](https://img.shields.io/badge/R-%3E%3D4.1.0-blue)]()
+[![shinyapps.io](https://img.shields.io/badge/demo-shinyapps.io-blue)](https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/)
 
-## Présentation
+---
 
-**Slitherlink** est un package R complet implémentant le jeu logique japonais **Slitherlink**. Ce projet a été développé dans le cadre de l'unité d'enseignement Programmation R du Master 1 Statistique et Science des Données (SSD) à l'Université de Montpellier.
+## Presentation
+
+Package R complet implementant le jeu logique **Slitherlink**, developpe dans le cadre du Master 1 Statistique et Science des Donnees de l'Universite de Montpellier.
 
 **Auteurs :** Moussa DIAGNE & Dossou AGOSSOU  
-**Date de rendu :** 17 Avril 2026
-
----
-
-## Jouer en ligne
-
-Une version interactive du jeu est disponible sans installation à cette adresse :
-
-**[Démo Live - SlitherlinkR](https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/)**
-
----
-
-## Installation
-
-Vous pouvez installer la version de développement de SlitherlinkR directement depuis GitHub :
-
-```r
-# Installer remotes si nécessaire
-if (!requireNamespace("remotes")) install.packages("remotes")
-
-# Installer le package SlitherlinkR
-remotes::install_github("Modestedvlr/Slitherlink")
-
-# Lancer l'application
-library(SlitherlinkR)
-run_slitherlink()
-```
+**Date de rendu :** 17 Avril 2026  
+**Application en ligne :** https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/
 
 ---
 
 ## Le Jeu Slitherlink
 
-Le Slitherlink est un casse-tete logique japonais. Le joueur doit tracer
-une **unique boucle fermée** sur une grille de points en respectant les règles :
+Le Slitherlink est un casse-tete logique japonais. Le joueur doit tracer une **unique boucle fermee** sur une grille de points en respectant les regles :
 
-- La boucle doit être **unique et fermée** (ni croisement, ni ramification)
-- Chaque point (sommet) de la boucle doit être connecté à exactement **0 ou 2 segments**
-- Les **chiffres** dans les cases indiquent combien de ses quatre côtés appartiennent à la boucle. Les cases vides n'ont aucune contrainte.
+- La boucle doit etre **unique et fermee** (ni croisement, ni ramification)
+- Chaque sommet a exactement **0 ou 2 segments**
+- Le **chiffre** dans une case indique combien de ses 4 cotes appartiennent a la boucle
+- Les cases **sans chiffre (NA)** n'ont aucune contrainte
 
+---
+
+## Installation
+
+```r
+# Installer les dependances
+install.packages(c(
+  "shiny", "ggplot2", "dplyr", "magrittr",
+  "Rcpp", "lpSolve", "DBI", "RSQLite", "testthat"
+))
+
+# Charger le package en developpement
+devtools::load_all()
+
+# Lancer l'application Shiny
+run_slitherlink()
+```
 
 ---
 
@@ -58,83 +52,217 @@ une **unique boucle fermée** sur une grille de points en respectant les règles
 ```
 SlitherlinkR/
 ├── R/
-│   ├── grid_management.R   # Classe S3, constructeur, toggle
-│   ├── grid_plot.R         # Visualisation ggplot2
-│   ├── validator.R         # Moteur de verification (DFS)
-│   ├── solver.R            # Solveur ILP (lpSolve)
-│   ├── solver_interface.R  # Interface solveur
-│   ├── generator.R         # Generateur de puzzles (unicite garantie)
-│   ├── database.R          # Leaderboard SQLite
-│   └── run_app.R           # Lancement application Shiny
+│   ├── grid_management.R   # Classe S3, constructeur, toggle (0->1->2->0)
+│   ├── grid_plot.R         # Visualisation ggplot2 (linewidth >= 3.4.0)
+│   ├── validator.R         # check_cells, check_degree, check_loop (DFS)
+│   ├── solver.R            # Solveur ILP (lpSolve) + elimination sous-tours
+│   ├── solver_interface.R  # solve_puzzle()
+│   ├── generator.R         # indices_from_loop, is_unique_solution, generate_puzzle
+│   ├── database.R          # init_db, save_score (SQLite)
+│   └── run_app.R           # run_slitherlink()
 ├── src/
 │   └── solver.cpp          # Solveur backtracking C++ (Rcpp)
 ├── shiny-app/
-│   └── app.R               # Application Shiny interactive
+│   └── app.R               # Application Shiny complete
 ├── tests/testthat/
-│   ├── test-grid.R         # Tests structure et toggle (8 tests)
-│   ├── test-validator.R    # Tests validateur (18 tests)
-│   ├── test-generator.R    # Tests generateur (8 tests)
-│   ├── test-solver.R       # Tests solveur ILP (5 tests)
-│   └── test-database.R     # Tests SQLite (4 tests)
-└── man/                    # Documentation roxygen2 (16 fichiers)
+│   ├── test-grid.R         # 8 tests  - Structure S3, toggle
+│   ├── test-validator.R    # 18 tests - check_cells, check_degree, check_loop
+│   ├── test-generator.R    # 8 tests  - generate_puzzle, unicite
+│   ├── test-solver.R       # 5 tests  - solve_slitherlink ILP
+│   └── test-database.R     # 4 tests  - init_db, save_score
+├── man/                    # 18 fichiers de documentation roxygen2
+├── .github/workflows/      # GitHub Actions CI/CD
+└── DESCRIPTION             # Date: 2026-04-17
 ```
 
 ---
 
-## Modélisation et Algorithmes
+## Modelisation Mathematique
 
-### Structure de données — Classe S3 `slitherlink`
-La grille est gérée par un objet S3 contenant les dimensions, les chiffres imposés et deux matrices d'états pour les segments horizontaux et verticaux (0 : absent, 1 : tracé, 2 : marqué d'une croix).
+### Representation en theorie des graphes
 
-### Double Solveur : ILP & Backtracking
-Le package intègre deux moteurs de résolution :
-- **ILP (lpSolve)** : Résolution par programmation linéaire en nombres entiers (utilisé pour la garantie d'unicité).
-- **C++ (Rcpp)** : Un solveur par backtracking récursif pour une performance maximale lors de l'exécution en temps réel.
+Le Slitherlink est modelise comme un graphe G = (V, E) ou :
+- **V** : les (n+1) x (m+1) points d'intersection d'une grille n x m
+- **E** : tous les segments possibles entre deux points voisins
+- **x[e] in {0,1}** : 1 si l'arete est tracee, 0 sinon
+- **y[v] in {0,1}** : 1 si le sommet est actif
 
-### Générateur avec Unicité Garantie
-Le générateur garantit qu'un puzzle n'a qu'une seule et unique solution possible. Il utilise une boucle connue, masque des cases selon la difficulté, et vérifie mathématiquement (via le solveur ILP) qu'aucune autre solution ne peut exister avant de proposer le puzzle au joueur.
+### Classe S3 `slitherlink`
+
+```r
+list(
+  n       = 4L,
+  m       = 4L,
+  indices = matrix(...),              # chiffres 0-3 ou NA
+  h_edges = matrix(0L, nrow=5, ncol=4),   # segments horizontaux
+  v_edges = matrix(0L, nrow=4, ncol=5)    # segments verticaux
+)
+# Etats : 0L = absent | 1L = trace (violet) | 2L = barre (rouge)
+```
+
+### Solveur ILP (lpSolve)
+
+```
+Variables  : x[e] in {0,1} pour chaque arete
+             y[v] in {0,1} pour chaque sommet
+
+Contrainte cases  : sum(4 aretes de la case) = chiffre_k
+Contrainte degre  : sum(aretes de v) = 2 * y[v]
+Elimination tours : sum(aretes du sous-tour) <= |sous-tour| - 1
+
+Resolution : iterative jusqu'a obtenir une seule boucle connexe
+```
+
+**Performances :**
+
+| Taille | Temps moyen | Valide |
+|--------|-------------|--------|
+| 3 x 3  | ~0.03s      | Oui    |
+| 4 x 4  | ~0.14s      | Oui    |
+| 5 x 5  | ~0.15s      | Oui    |
+
+### Unicite garantie - `is_unique_solution()`
+
+```
+1. Resoudre le puzzle une premiere fois (ILP)
+2. Interdire cette solution : sum(aretes_sol1) <= |sol1| - 1
+3. Tenter de resoudre a nouveau
+4. Si infaisable -> solution unique confirmee
+5. Sinon -> recommencer (max 20 tentatives)
+```
+
+- Grilles **3x3 et 4x4** : unicite garantie mathematiquement via ILP
+- Grilles **5x5** : masquage direct garanti (verification trop couteuse)
 
 ---
 
-## Tests et Qualité
+## Utilisation de l'API
 
-Le package respecte les standards de développement R avec une couverture de tests complète.
+```r
+# Creer une grille
+m <- matrix(c(2,1,1,2, 1,0,0,1, 1,0,0,1, 2,1,1,2), nrow=4, byrow=TRUE)
+g <- new_slitherlink(m)
+
+# Visualiser
+plot_slitherlink(g)
+
+# Tracer un segment (cycle : absent -> trace -> barre -> absent)
+g <- toggle_h_edge(g, 1, 1)
+g <- toggle_v_edge(g, 1, 1)
+
+# Valider la solution
+validate_solution(g)   # list(valid, messages)
+
+# Resoudre automatiquement (ILP)
+g_solved <- solve_slitherlink(g)
+
+# Generer un puzzle avec unicite garantie
+h <- matrix(0L,5,4); v <- matrix(0L,4,5)
+h[1,] <- 1L; h[5,] <- 1L; v[,1] <- 1L; v[,5] <- 1L
+puzzle <- generate_puzzle(h, v, difficulty = "moyen")
+# puzzle$grid     -> indices avec NA
+# puzzle$solution -> h_edges et v_edges de la solution
+```
+
+---
+
+## Application Shiny
+
+L'application est accessible en ligne et offre une experience de jeu complete :
+
+| Fonctionnalite | Description |
+|----------------|-------------|
+| 3 niveaux | Facile (3x3) / Moyen (4x4) / Difficile (5x5) |
+| 24 puzzles | 8 formes differentes par niveau |
+| Unicite | Solution unique garantie (3x3, 4x4) |
+| Timer | Mise a jour chaque seconde |
+| Solveur | Bouton Resoudre via ILP (instantane) |
+| Leaderboard | SQLite persistant, top 8 par temps, reset |
+| Design | Theme sombre premium (Space Mono + DM Sans) |
+| Segments | 3 etats : trace (violet) / barre (rouge) / absent |
+
+```r
+# Lancer localement
+run_slitherlink()
+
+# Application en ligne
+# https://dossou-moussa-m1-ssd.shinyapps.io/shiny-app/
+```
+
+---
+
+## Tests et Qualite
 
 ```r
 devtools::test()
-# [ FAIL 0 | WARN 0 | SKIP 0 | PASS 43 ]
+# [ FAIL 0 | WARN 0 | SKIP 0 | PASS 51 ]
 
 devtools::check()
 # 0 errors | 0 warnings | 0 notes
 ```
 
-| Fichier          | Périmètre de test                              | Nb Tests |
-|------------------|------------------------------------------------|----------|
-| test-grid.R      | Structure S3, toggle segments, erreurs limites | 8        |
-| test-validator.R | Vérification des cases, sommets et boucle unique | 18       |
-| test-generator.R | Génération de puzzle et vérification d'unicité | 8        |
-| test-solver.R    | Résolution complète par ILP                    | 5        |
-| test-database.R  | Création base de données et stockage scores    | 4        |
+| Fichier | Contexte teste | Tests |
+|---------|----------------|-------|
+| test-grid.R | Structure S3, toggle, coordonnees invalides | 8 |
+| test-validator.R | check_cells, check_degree, check_loop, validate | 18 |
+| test-generator.R | generate_puzzle, unicite, dimensions | 8 |
+| test-solver.R | solve_slitherlink ILP 3x3 et 4x4, puzzle impossible | 5 |
+| test-database.R | init_db, save_score, colonnes table | 4 |
+| **Total** | | **51** |
 
 ---
 
-## Phases de Développement
+## Dependances
 
-| Phases   | Contenus                              | Auteurs        |
-|---------|----------------------------------------|----------------|
-| Phase 1 | Structure S3, ggplot2, toggle          | Dossou AGOSSOU |
-| Phase 2 | Validateur DFS, 26 tests               | Moussa DIAGNE  |
-| Phase 3 | Solveur C++ Rcpp                       | Dossou AGOSSOU |
-| Phase 4 | Solveur ILP, generateur, Shiny, SQLite | Moussa DIAGNE  |
-| Phase 5 | Tests complets, documentation, unicite | Dossou AGOSSOU |
+| Package | Role |
+|---------|------|
+| ggplot2, dplyr, magrittr | Visualisation et manipulation des donnees |
+| shiny | Application web interactive |
+| Rcpp | Integration C++ (solveur backtracking) |
+| lpSolve | Solveur ILP (programmation lineaire entiere) |
+| DBI, RSQLite | Base de donnees leaderboard persistant |
+| testthat | Tests unitaires automatises |
+| rsconnect | Deploiement sur shinyapps.io |
+
+---
+
+## Phases de Developpement
+
+| Phase | Contenu | Auteur |
+|-------|---------|--------|
+| Phase 1 | Structure S3, ggplot2, toggle des segments | Moussa DIAGNE |
+| Phase 2 | Validateur DFS, 26 tests unitaires | Dossou AGOSSOU |
+| Phase 3 | Solveur C++ Rcpp backtracking | Moussa DIAGNE |
+| Phase 4 | Solveur ILP, generateur, Shiny, SQLite | Dossou AGOSSOU |
+| Phase 5 | Tests complets, documentation roxygen2, CI/CD | Moussa DIAGNE |
+| Phase 6 | Unicite garantie, 8 boucles/niveau, deploiement | Dossou AGOSSOU |
 
 ---
 
-## Collaboration Git
+## Workflow Git
 
-Le projet a suivi un flux de travail rigoureux :
-- **Développement par phases** : Chaque fonctionnalité majeure a fait l'objet d'une phase dédiée (voir rapport technique).
-- **Intégration Continue (CI)** : GitHub Actions lance `R CMD check` à chaque push pour garantir la stabilité du code.
-- **Merge Requests** : Fusion systématique sur la branche `main` après validation des tests.
+```
+main   <- branche stable (production)
+  |
+  +-- dev   : Phase 1 initiale (Moussa DIAGNE)
+  +-- dev2  : Developpement complet (Phases 2 a 6)
+
+Merge final : dev2 -> main avant soumission
+```
 
 ---
+
+## CI/CD GitHub Actions
+
+Le workflow `.github/workflows/R-CMD-check.yaml` se declenche a chaque push sur `main` ou `dev2` :
+
+- Environnement : Windows Latest + R 4.4.0
+- Etapes : checkout, setup-r, setup-r-dependencies, check-r-package
+- Variable : `_R_CHECK_SYSTEM_CLOCK_=0`
+- Resultat : badge dynamique sur le README
+
+---
+
+## Licence
+
+MIT - voir le fichier [LICENSE](LICENSE).
