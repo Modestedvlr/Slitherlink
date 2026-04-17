@@ -77,10 +77,74 @@ v5c[4,1] <- 1L; v5c[5,1] <- 1L
 v5c[1,6] <- 1L; v5c[2,5] <- 1L
 v5c[3,6] <- 1L; v5c[4,6] <- 1L; v5c[5,6] <- 1L
 
+
+
+# -----------------------------------------------------------------------------
+# FONCTION MAKE_RECT — Génère des rectangles valides
+# -----------------------------------------------------------------------------
+make_rect <- function(n_rows, n_cols, r1, c1, r2, c2) {
+  h <- matrix(0L, nrow=n_rows+1, ncol=n_cols)
+  v <- matrix(0L, nrow=n_rows, ncol=n_cols+1)
+  for (c in c1:c2) h[r1,   c] <- 1L
+  for (c in c1:c2) h[r2+1, c] <- 1L
+  for (r in r1:r2) v[r, c1]   <- 1L
+  for (r in r1:r2) v[r, c2+1] <- 1L
+  list(h=h, v=v)
+}
+
+# Nouvelles boucles 3x3
+r3d <- make_rect(3, 3, 1, 1, 2, 2)
+r3e <- make_rect(3, 3, 1, 2, 2, 3)
+r3f <- make_rect(3, 3, 2, 1, 3, 2)
+r3g <- make_rect(3, 3, 1, 1, 1, 3)
+r3h <- make_rect(3, 3, 1, 1, 3, 1)
+
+# Nouvelles boucles 4x4
+r4d <- make_rect(4, 4, 1, 1, 2, 4)
+r4e <- make_rect(4, 4, 1, 1, 4, 2)
+r4f <- make_rect(4, 4, 2, 2, 3, 3)
+r4g <- make_rect(4, 4, 1, 2, 4, 3)
+r4h <- make_rect(4, 4, 1, 1, 3, 3)
+
+# Nouvelles boucles 5x5
+r5d <- make_rect(5, 5, 1, 1, 3, 5)
+r5e <- make_rect(5, 5, 1, 1, 5, 3)
+r5f <- make_rect(5, 5, 2, 2, 4, 4)
+r5g <- make_rect(5, 5, 1, 1, 2, 5)
+r5h <- make_rect(5, 5, 1, 3, 5, 5)
+
+
 base_loops <- list(
-  facile    = list(list(h=h3a,v=v3a), list(h=h3b,v=v3b), list(h=h3c,v=v3c)),
-  moyen     = list(list(h=h4a,v=v4a), list(h=h4b,v=v4b), list(h=h4c,v=v4c)),
-  difficile = list(list(h=h5a,v=v5a), list(h=h5b,v=v5b), list(h=h5c,v=v5c))
+  facile = list(
+    list(h=h3a, v=v3a),  # bord exterieur
+    list(h=h3b, v=v3b),  # forme en L
+    list(h=h3c, v=v3c),  # peninsule
+    list(h=r3d$h, v=r3d$v),  # 2x2 haut-gauche
+    list(h=r3e$h, v=r3e$v),  # 2x2 haut-droite
+    list(h=r3f$h, v=r3f$v),  # 2x2 bas-gauche
+    list(h=r3g$h, v=r3g$v),  # 1x3 haut
+    list(h=r3h$h, v=r3h$v)   # 3x1 gauche
+  ),
+  moyen = list(
+    list(h=h4a, v=v4a),  # bord exterieur
+    list(h=h4b, v=v4b),  # forme en Z
+    list(h=h4c, v=v4c),  # peninsule
+    list(h=r4d$h, v=r4d$v),  # 2x4 haut
+    list(h=r4e$h, v=r4e$v),  # 4x2 gauche
+    list(h=r4f$h, v=r4f$v),  # 2x2 centre
+    list(h=r4g$h, v=r4g$v),  # 4x2 centre
+    list(h=r4h$h, v=r4h$v)   # 3x3 haut-gauche
+  ),
+  difficile = list(
+    list(h=h5a, v=v5a),  # bord exterieur
+    list(h=h5b, v=v5b),  # forme en S
+    list(h=h5c, v=v5c),  # peninsule
+    list(h=r5d$h, v=r5d$v),  # 3x5 haut
+    list(h=r5e$h, v=r5e$v),  # 5x3 gauche
+    list(h=r5f$h, v=r5f$v),  # 3x3 centre
+    list(h=r5g$h, v=r5g$v),  # 2x5 haut
+    list(h=r5h$h, v=r5h$v)   # 5x3 droite
+  )
 )
 
 # =============================================================================
