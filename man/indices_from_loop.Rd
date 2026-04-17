@@ -2,18 +2,13 @@
 % Please edit documentation in R/generator.R
 \name{indices_from_loop}
 \alias{indices_from_loop}
-\title{Calculer les indices d'une grille depuis une boucle}
+\title{Calculer les indices depuis une boucle}
 \usage{
 indices_from_loop(h, v)
 }
 \arguments{
-\item{h}{Matrice h_edges de la solution}
-
-\item{v}{Matrice v_edges de la solution}
-}
-\value{
-Matrice d'indices (0-3)
+\item{h, v}{Matrices de segments}
 }
 \description{
-Calculer les indices d'une grille depuis une boucle
+Calculer les indices depuis une boucle
 }
